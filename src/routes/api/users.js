@@ -23,13 +23,21 @@ router.post('/', auth.optional, (req, res, next) => {
     });
   }
 
-  const finalUser = new Users(user);
+  Users.findOne({ email: user.email }).then(user => {
+    const alreadyRegistered = !!user;
 
-  finalUser.setPassword(user.password);
+    if (alreadyRegistered) {
+      return res.status(409).json({ errors: { email: 'already exist' } });
+    } else {
+      const finalUser = new Users(user);
 
-  return finalUser
-    .save()
-    .then(() => res.json({ user: finalUser.toAuthJSON() }));
+      finalUser.setPassword(user.password);
+
+      return finalUser
+        .save()
+        .then(() => res.json({ user: finalUser.toAuthJSON() }));
+    }
+  });
 });
 
 // POST login route (optional, everyone has access)
