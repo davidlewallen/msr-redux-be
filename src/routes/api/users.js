@@ -23,8 +23,8 @@ router.post('/', auth.optional, (req, res, next) => {
     });
   }
 
-  Users.findOne({ email: user.email }).then(user => {
-    const alreadyRegistered = !!user;
+  Users.findOne({ email: user.email }).then(existingUser => {
+    const alreadyRegistered = !!existingUser;
 
     if (alreadyRegistered) {
       return res.status(409).json({ errors: { email: 'already exist' } });
