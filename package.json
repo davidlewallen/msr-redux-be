@@ -1,0 +1,39 @@
+{
+  "name": "msr-redux-be",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon src/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/davidlewallen/msr-redux-be.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/davidlewallen/msr-redux-be/issues"
+  },
+  "homepage": "https://github.com/davidlewallen/msr-redux-be#readme",
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "morgan": "^1.9.1",
+    "nodemon": "^2.0.2",
+    "prettier": "1.19.1"
+  },
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "errorhandler": "^1.5.1",
+    "express": "^4.17.1",
+    "express-jwt": "^5.3.1",
+    "express-session": "^1.17.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.9.3",
+    "passport": "^0.4.1",
+    "passport-local": "^1.0.0"
+  }
+}
