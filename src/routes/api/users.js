@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const passport = require('passport');
 const router = require('express').Router();
+const validator = require('validator');
+
 const auth = require('../auth');
 
 const Users = mongoose.model('Users');
@@ -20,6 +22,12 @@ router.post('/', auth.optional, (req, res, next) => {
   if (!user.password || !user.password.length) {
     return res.status(422).json({
       errors: { password: 'is required' },
+    });
+  }
+
+  if (!validator.isEmail(user.email)) {
+    return res.status(400).json({
+      errors: { email: 'must be valid email address' },
     });
   }
 
