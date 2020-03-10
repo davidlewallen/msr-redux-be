@@ -5,11 +5,13 @@ const session = require('express-session');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const errorHandler = require('errorhandler');
+const morgan = require('morgan');
 
 // Configure mongoose's promise to global promise
 mongoose.promise = global.Promise;
 
-// Configure isProduction variable
+// Configure variables
+const port = process.env.PORT || 8000;
 const isProduction = process.env.NODE_ENV === 'production';
 const isDevelopment = !isProduction;
 
@@ -33,16 +35,21 @@ app.use(
 if (isDevelopment) {
   app.use(require('morgan')('dev'));
   app.use(errorHandler());
+  app.use(morgan('dev'));
 }
 
 // Configure Mongoose
-mongoose.connect('mongodb://localhost/passport-tutorial');
+mongoose.connect('mongodb://localhost/msr', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 mongoose.set('debug', true);
 
 // Models & routes
 require('./models/Users');
 require('./config/passport');
 app.use(require('./routes'));
+
 // Error handlers & middlewares
 app.use((err, req, res, next) => {
   res.status(err.status || 500);
@@ -55,4 +62,6 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(8000, () => console.log('Server running on http://localhost:8000/'));
+app.listen(port, () =>
+  console.log(`Server running on http://localhost:${port}/`)
+);
