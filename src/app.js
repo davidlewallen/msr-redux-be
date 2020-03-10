@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
@@ -25,7 +27,7 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(
   session({
-    secret: 'passport-tutorial',
+    secret: process.env.SESSION_SECRET,
     cookie: { maxAge: 60000 },
     resave: false,
     saveUninitialized: false,
@@ -39,11 +41,17 @@ if (isDevelopment) {
 }
 
 // Configure Mongoose
-mongoose.connect('mongodb://localhost/msr', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
-mongoose.set('debug', true);
+mongoose.connect(
+  process.env[`MONGOOSE_DB_URL_${isProduction ? 'PROD' : 'DEV'}`],
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  }
+);
+
+if (isDevelopment) {
+  mongoose.set('debug', true);
+}
 
 // Models & routes
 require('./models/Users');
