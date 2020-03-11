@@ -5,6 +5,9 @@ const moment = require('moment');
 
 const Users = mongoose.model('Users');
 
+const isProduction = process.env.NODE_ENV === 'production';
+const isDevelopment = !isProduction;
+
 const mg = mailgun({
   apiKey: process.env.MAILGUN_API_KEY,
   domain: 'mail.mysavedrecipes.com',
@@ -50,9 +53,9 @@ const sendVerificationEmail = user => {
   };
 
   mg.messages().send(emailTemplate, (error, body) => {
-    console.log('error', error);
-    console.log('body', body);
-    console.log(`Mailgun Send Verification Email: ${body}`);
+    if (isDevelopment) {
+      console.log(`Mailgun Send Verification Email: ${body}`);
+    }
   });
 };
 
