@@ -4,6 +4,7 @@ const router = require('express').Router();
 const validator = require('validator');
 
 const auth = require('../auth');
+const usersControllers = require('../../controllers/users');
 
 const Users = mongoose.model('Users');
 
@@ -43,6 +44,7 @@ router.post('/', auth.optional, (req, res, next) => {
 
       return finalUser
         .save()
+        .then(user => usersControllers.sendVerificationEmail(user))
         .then(() => res.json({ user: finalUser.toAuthJSON() }));
     }
   });
