@@ -8,6 +8,11 @@ const UsersSchema = new Schema({
   email: String,
   hash: String,
   salt: String,
+  verification: {
+    status: Boolean,
+    key: String,
+    expires: Number,
+  },
 });
 
 UsersSchema.methods.setPassword = function(password) {

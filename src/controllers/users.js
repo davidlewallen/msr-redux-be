@@ -16,19 +16,17 @@ const mg = mailgun({
 const setUserToUnverified = id => {
   const verificationKey = uuidv1();
 
-  Users.findByIdAndDelete(id, {
+  return Users.findByIdAndUpdate(id, {
     verification: {
       status: false,
       key: verificationKey,
       expires: moment().add(7, 'days'),
     },
-  });
-
-  return verificationKey;
+  }).then(() => verificationKey);
 };
 
 const setUserToBeVerified = id => {
-  Users.findByIdAndUpdate(id, {
+  return Users.findByIdAndUpdate(id, {
     verification: { status: true },
   });
 };
