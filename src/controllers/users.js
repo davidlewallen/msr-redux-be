@@ -1,6 +1,6 @@
 const mailgun = require('mailgun-js');
 const mongoose = require('mongoose');
-const uuidv1 = require('uuid/v1');
+const { v1: uuidv1 } = require('uuid');
 const moment = require('moment');
 
 const Users = mongoose.model('Users');
