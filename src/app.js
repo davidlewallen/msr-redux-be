@@ -49,6 +49,8 @@ mongoose.connect(
   }
 );
 
+mongoose.set('useFindAndModify', true);
+
 if (isDevelopment) {
   mongoose.set('debug', true);
 }
