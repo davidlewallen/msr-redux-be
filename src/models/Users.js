@@ -11,7 +11,6 @@ const UsersSchema = new Schema({
   verification: {
     status: Boolean,
     key: String,
-    expires: Number,
   },
 });
 
