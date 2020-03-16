@@ -45,7 +45,8 @@ router.post('/', auth.optional, (req, res, next) => {
       return finalUser
         .save()
         .then(user => usersControllers.sendVerificationEmail(user))
-        .then(() => res.json({ user: finalUser.toAuthJSON() }));
+        .then(() => res.json({ user: finalUser.toAuthJSON() }))
+        .catch(err => console.log('err', err));
     }
   });
 });
@@ -103,5 +104,7 @@ router.get('/current', auth.required, (req, res, next) => {
     return res.json({ user: user.toAuthJSON() });
   });
 });
+
+router.get('/verify/:id/:key', auth.optional, usersControllers.verifyUser);
 
 module.exports = router;
