@@ -1,7 +1,6 @@
 const mailgun = require('mailgun-js');
 const mongoose = require('mongoose');
 const { v1: uuidv1 } = require('uuid');
-const moment = require('moment');
 
 const Users = mongoose.model('Users');
 
@@ -20,7 +19,6 @@ const setUserToUnverified = id => {
     verification: {
       status: false,
       key: verificationKey,
-      expires: moment().add(7, 'days'),
     },
   }).then(() => verificationKey);
 };
