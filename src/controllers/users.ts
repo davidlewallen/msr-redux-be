@@ -1,18 +1,21 @@
-const mailgun = require('mailgun-js');
-const mongoose = require('mongoose');
-const { v1: uuidv1 } = require('uuid');
+import { Request, Response } from 'express'
+import mailgun from 'mailgun-js';
+import { Model, model, Types } from 'mongoose';
+import { v1 as uuidv1 } from 'uuid';
 
-const Users = mongoose.model('Users');
+import { IUserModel } from '../models/interface';
+
+const Users: Model<IUserModel> = model('Users');
 
 const isProduction = process.env.NODE_ENV === 'production';
 const isDevelopment = !isProduction;
 
 const mg = mailgun({
-  apiKey: process.env.MAILGUN_API_KEY,
+  apiKey: process.env.MAILGUN_API_KEY || '',
   domain: 'mail.mysavedrecipes.com',
 });
 
-const setUserToUnverified = id => {
+const setUserToUnverified = (id: string) => {
   const verificationKey = uuidv1();
 
   return Users.findByIdAndUpdate(id, {
@@ -23,13 +26,13 @@ const setUserToUnverified = id => {
   }).then(() => verificationKey);
 };
 
-const setUserToBeVerified = id => {
+const setUserToBeVerified = (id: string) => {
   return Users.findByIdAndUpdate(id, {
     verification: { status: true },
   });
 };
 
-const verifyUser = (req, res) => {
+const verifyUser = (req: Request, res: Response) => {
   const {
     params: { id, key },
   } = req;
@@ -62,7 +65,7 @@ const verifyUser = (req, res) => {
   });
 };
 
-const sendVerificationEmail = user => {
+const sendVerificationEmail = (user: IUserModel) => {
   return setUserToUnverified(user._id).then(verificationKey => {
     const verificationParams = `id=${user._id}&key=${verificationKey}`;
 
@@ -70,7 +73,7 @@ const sendVerificationEmail = user => {
 
     const emailTemplate = {
       from: 'My Saved Recipes <support@mail.mysavedrecipes.com>',
-      to: user.email,
+      to: user.email || '',
       subject: 'My Saved Recipes - Email Verification',
       text: `
       Thank you for signing up with My Saved Recipes!
@@ -81,7 +84,7 @@ const sendVerificationEmail = user => {
     `,
     };
 
-    mg.messages().send(emailTemplate, (error, body) => {
+    mg.messages().send(emailTemplate, (error: { statusCode: number, message: string }, body) => {
       if (isDevelopment) {
         console.log(`Mailgun Send Verification Email: ${body}`);
       }
@@ -89,7 +92,7 @@ const sendVerificationEmail = user => {
   });
 };
 
-module.exports = {
+export default {
   sendVerificationEmail,
-  verifyUser,
-};
+  verifyUser
+}

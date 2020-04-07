@@ -1,10 +1,12 @@
-const mongoose = require('mongoose');
-const crypto = require('crypto');
-const jwt = require('jsonwebtoken');
+import { Schema, Model, Document, model } from 'mongoose';
+import crypto from 'crypto';
+import jwt from 'jsonwebtoken';
 
-const { Schema } = mongoose;
+import { IUserModel } from './interface'
 
-const UsersSchema = new Schema({
+const { JWT_SECRET_REQUIRED = '' } = process.env
+
+const UsersSchema: Schema = new Schema({
   email: String,
   hash: String,
   salt: String,
@@ -14,14 +16,14 @@ const UsersSchema = new Schema({
   },
 });
 
-UsersSchema.methods.setPassword = function(password) {
+UsersSchema.methods.setPassword = function (password: string) {
   this.salt = crypto.randomBytes(16).toString('hex');
   this.hash = crypto
     .pbkdf2Sync(password, this.salt, 10000, 512, 'sha512')
     .toString('hex');
 };
 
-UsersSchema.methods.validatePassword = function(password) {
+UsersSchema.methods.validatePassword = function (password: string) {
   const hash = crypto
     .pbkdf2Sync(password, this.salt, 10000, 512, 'sha512')
     .toString('hex');
@@ -29,7 +31,7 @@ UsersSchema.methods.validatePassword = function(password) {
   return this.hash === hash;
 };
 
-UsersSchema.methods.generateJWT = function() {
+UsersSchema.methods.generateJWT = function () {
   const today = new Date();
   const expirationDate = new Date(today);
 
@@ -39,13 +41,13 @@ UsersSchema.methods.generateJWT = function() {
     {
       email: this.email,
       id: this._id,
-      exp: parseInt(expirationDate.getTime() / 1000, 10),
+      exp: parseInt(String(expirationDate.getTime() / 1000), 10),
     },
-    process.env.JWT_SECRET_REQUIRED
+    JWT_SECRET_REQUIRED
   );
 };
 
-UsersSchema.methods.toAuthJSON = function() {
+UsersSchema.methods.toAuthJSON = function () {
   return {
     _id: this._id,
     email: this.email,
@@ -53,4 +55,4 @@ UsersSchema.methods.toAuthJSON = function() {
   };
 };
 
-mongoose.model('Users', UsersSchema);
+export const User: Model<IUserModel> = model<IUserModel>('Users', UsersSchema);

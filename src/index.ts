@@ -9,6 +9,11 @@ import mongoose from 'mongoose'
 import errorHandler from 'errorhandler'
 import morgan from 'morgan'
 
+import './models/Users'
+import './config/passport'
+
+import routes from './routes'
+
 // Configure mongoose's promise to global promise
 // mongoose.promise = global.Promise;
 
@@ -56,9 +61,7 @@ if (isDevelopment) {
 }
 
 // Models & routes
-require('./models/Users');
-require('./config/passport');
-app.use(require('./routes'));
+app.use(routes);
 
 // Error handlers & middlewares
 app.use((err: { status: number, message: string }, req: express.Request, res: express.Response, next: express.NextFunction) => {
