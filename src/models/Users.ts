@@ -1,8 +1,8 @@
-import { Schema, Model, Document, model } from 'mongoose';
+import { Schema, Model, model } from 'mongoose';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 
-import { IUserModel } from './interface'
+import { IUserModel } from './interface/users'
 
 const { JWT_SECRET_REQUIRED = '' } = process.env
 
@@ -54,5 +54,13 @@ UsersSchema.methods.toAuthJSON = function () {
     token: this.generateJWT(),
   };
 };
+
+UsersSchema.methods.getUser = function () {
+  return {
+    id: this._id,
+    email: this.email,
+    isVerified: this.verification.status
+  }
+}
 
 export const User: Model<IUserModel> = model<IUserModel>('Users', UsersSchema);

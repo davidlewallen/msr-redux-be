@@ -3,7 +3,7 @@ import mailgun from 'mailgun-js';
 import { Model, model, Types } from 'mongoose';
 import { v1 as uuidv1 } from 'uuid';
 
-import { IUserModel } from '../models/interface';
+import { IUserModel } from '../models/interface/users';
 
 const Users: Model<IUserModel> = model('Users');
 

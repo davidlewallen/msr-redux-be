@@ -5,14 +5,14 @@ import validator from 'validator'
 
 import auth from '../auth'
 import usersControllers from '../../controllers/users'
-import { IUserModel } from '../../models/interface';
+import { IUserModel } from '../../models/interface/users';
 
 const Users: Model<IUserModel> = model('Users');
 
 const router = express.Router();
 
 // POST new user route (optional, everyone has access)
-router.post('/', auth.optional, (req, res, next) => {
+router.post('/', (req, res, next) => {
   const {
     body: { user },
   } = req;
@@ -66,7 +66,7 @@ router.get('/', auth.required, (req, res, next) => {
       return res.sendStatus(400);
     }
 
-    return res.json({ user: user.toAuthJSON() });
+    return res.json(user.getUser());
   });
 });
 
@@ -101,7 +101,8 @@ router.post('/login', auth.optional, (req, res, next) => {
 
         user.token = passportUser.generateJWT();
 
-        return res.json({ user: user.toAuthJSON() });
+        res.cookie('token', user.toAuthJSON().token)
+        return res.json({ user: user });
       }
 
       return res.status(400).json({

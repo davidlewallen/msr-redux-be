@@ -2,7 +2,7 @@ import { Model, model } from 'mongoose';
 import passport from 'passport'
 import * as passportLocal from 'passport-local'
 
-import { IUserModel } from '../models/interface'
+import { IUserModel } from '../models/interface/users'
 
 const LocalStrategy = passportLocal.Strategy
 
