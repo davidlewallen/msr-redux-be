@@ -3,11 +3,11 @@ require('dotenv').config();
 import express from 'express';
 import path from 'path';
 import bodyParser from 'body-parser'
-import session from 'express-session'
 import cors from 'cors'
 import mongoose from 'mongoose'
 import errorHandler from 'errorhandler'
 import morgan from 'morgan'
+import cookieParser from 'cookie-parser'
 
 import './models/Users'
 import './config/passport'
@@ -30,14 +30,7 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET || 'pleaseupdateme',
-    cookie: { maxAge: 60000 },
-    resave: false,
-    saveUninitialized: false,
-  })
-);
+app.use(cookieParser())
 
 if (isDevelopment) {
   app.use(require('morgan')('dev'));
