@@ -1,4 +1,4 @@
-import { Document } from 'mongoose'
+import { Document, Types } from 'mongoose'
 
 export interface IUser {
   email?: string,
@@ -8,6 +8,7 @@ export interface IUser {
     status: boolean,
     key: string,
   }
+  recipes: [Types.ObjectId]
 }
 
 export interface IUserModel extends IUser, Document {

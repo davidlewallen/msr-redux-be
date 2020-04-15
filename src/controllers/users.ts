@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import mailgun from 'mailgun-js';
-import { Model, model, Types } from 'mongoose';
+import { Model, model } from 'mongoose';
 import { v1 as uuidv1 } from 'uuid';
 
 import { IUserModel } from '../models/interface/user';

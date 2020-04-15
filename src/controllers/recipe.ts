@@ -3,8 +3,26 @@ import { Model, model, Types } from 'mongoose';
 import { decode } from 'jsonwebtoken'
 
 import { IRecipeModel } from '../models/interface/recipe';
+import { IUserModel } from '../models/interface/user'
 
 const Recipe: Model<IRecipeModel> = model('Recipe');
+const User: Model<IUserModel> = model('User');
+
+const addRecipeIdToUser = (userID: Types.ObjectId, recipeId: Types.ObjectId) => {
+  return User.findById({ _id: userID })
+    .then(user => {
+      if (!user) return;
+
+      user.recipes.push(recipeId);
+
+      return user.save();
+    })
+    .catch(err => {
+      console.log('err', err);
+
+      return err;
+    })
+}
 
 export const createRecipe = (req: Request, res: Response) => {
   const { body, cookies } = req;
@@ -23,11 +41,12 @@ export const createRecipe = (req: Request, res: Response) => {
 
   const recipe = new Recipe({ title, ingredients, directions })
 
-  recipe.save()
-    .then(() => res.status(200))
-    .catch(err => {
+  return recipe.save()
+    .then(recipe => addRecipeIdToUser(userID, recipe._id))
+    .then(() => res.sendStatus(200))
+    .catch((err) => {
       console.log('recipe -> createRecipe error:', err);
 
-      return res.status(500).json({ errors: { err } })
+      return res.status(500).json({ errors: err })
     })
 }
