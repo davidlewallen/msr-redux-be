@@ -9,7 +9,7 @@ import errorHandler from 'errorhandler'
 import morgan from 'morgan'
 import cookieParser from 'cookie-parser'
 
-import './models/Users'
+import './models'
 import './config/passport'
 
 import routes from './routes'
