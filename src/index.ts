@@ -1,19 +1,24 @@
 require('dotenv').config();
 
-const express = require('express');
-const path = require('path');
-const bodyParser = require('body-parser');
-const session = require('express-session');
-const cors = require('cors');
-const mongoose = require('mongoose');
-const errorHandler = require('errorhandler');
-const morgan = require('morgan');
+import express from 'express';
+import path from 'path';
+import bodyParser from 'body-parser'
+import session from 'express-session'
+import cors from 'cors'
+import mongoose from 'mongoose'
+import errorHandler from 'errorhandler'
+import morgan from 'morgan'
+
+import './models/Users'
+import './config/passport'
+
+import routes from './routes'
 
 // Configure mongoose's promise to global promise
-mongoose.promise = global.Promise;
+// mongoose.promise = global.Promise;
 
 // Configure variables
-const port = process.env.PORT || 8000;
+const port: Number = Number(process.env.PORT) || 8000;
 const isProduction = process.env.NODE_ENV === 'production';
 const isDevelopment = !isProduction;
 
@@ -27,7 +32,7 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(
   session({
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET || 'pleaseupdateme',
     cookie: { maxAge: 60000 },
     resave: false,
     saveUninitialized: false,
@@ -42,7 +47,7 @@ if (isDevelopment) {
 
 // Configure Mongoose
 mongoose.connect(
-  process.env[`MONGOOSE_DB_URL_${isProduction ? 'PROD' : 'DEV'}`],
+  process.env[`MONGOOSE_DB_URL_${isProduction ? 'PROD' : 'DEV'}`] || '',
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -56,12 +61,10 @@ if (isDevelopment) {
 }
 
 // Models & routes
-require('./models/Users');
-require('./config/passport');
-app.use(require('./routes'));
+app.use(routes);
 
 // Error handlers & middlewares
-app.use((err, req, res, next) => {
+app.use((err: { status: number, message: string }, req: express.Request, res: express.Response, next: express.NextFunction) => {
   res.status(err.status || 500);
 
   res.json({

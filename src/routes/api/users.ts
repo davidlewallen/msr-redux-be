@@ -1,12 +1,15 @@
-const mongoose = require('mongoose');
-const passport = require('passport');
-const router = require('express').Router();
-const validator = require('validator');
+import { Model, model } from 'mongoose';
+import passport from 'passport'
+import express from 'express'
+import validator from 'validator'
 
-const auth = require('../auth');
-const usersControllers = require('../../controllers/users');
+import auth from '../auth'
+import usersControllers from '../../controllers/users'
+import { IUserModel } from '../../models/interface';
 
-const Users = mongoose.model('Users');
+const Users: Model<IUserModel> = model('Users');
+
+const router = express.Router();
 
 // POST new user route (optional, everyone has access)
 router.post('/', auth.optional, (req, res, next) => {
@@ -54,6 +57,7 @@ router.post('/', auth.optional, (req, res, next) => {
 // GET current route (required, only authenticated users have access)
 router.get('/', auth.required, (req, res, next) => {
   const {
+    // @ts-ignore
     payload: { id },
   } = req;
 
@@ -100,11 +104,13 @@ router.post('/login', auth.optional, (req, res, next) => {
         return res.json({ user: user.toAuthJSON() });
       }
 
-      return status(400).info;
+      return res.status(400).json({
+        errors: { user: info }
+      });
     }
   )(req, res, next);
 });
 
 router.get('/verify/:id/:key', auth.optional, usersControllers.verifyUser);
 
-module.exports = router;
+export default router;
