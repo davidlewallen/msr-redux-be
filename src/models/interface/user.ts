@@ -8,7 +8,7 @@ export interface IUser {
     status: boolean,
     key: string,
   }
-  recipes: [Types.ObjectId]
+  recipes: Types.ObjectId[]
 }
 
 export interface IUserModel extends IUser, Document {
