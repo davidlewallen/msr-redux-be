@@ -4,7 +4,7 @@ import express from 'express'
 import validator from 'validator'
 
 import auth from '../auth'
-import usersControllers from '../../controllers/users'
+import { createUser, getUser, login, verifyUser } from '../../controllers/users'
 import { IUserModel } from '../../models/interface/user';
 
 const User: Model<IUserModel> = model('User');
@@ -12,106 +12,14 @@ const User: Model<IUserModel> = model('User');
 const router = express.Router();
 
 // POST new user route (optional, everyone has access)
-router.post('/', (req, res, next) => {
-  const {
-    body: { user },
-  } = req;
-
-  if (!user.email || !user.email.length) {
-    return res.status(422).json({
-      errors: { email: 'is required' },
-    });
-  }
-
-  if (!user.password || !user.password.length) {
-    return res.status(422).json({
-      errors: { password: 'is required' },
-    });
-  }
-
-  if (!validator.isEmail(user.email)) {
-    return res.status(400).json({
-      errors: { email: 'must be valid email address' },
-    });
-  }
-
-  User.findOne({ email: user.email }).then(existingUser => {
-    const alreadyRegistered = !!existingUser;
-
-    if (alreadyRegistered) {
-      return res.status(409).json({ errors: { email: 'already exist' } });
-    } else {
-      const finalUser = new User(user);
-
-      finalUser.setPassword(user.password);
-
-      return finalUser
-        .save()
-        .then(user => usersControllers.sendVerificationEmail(user))
-        .then(() => res.json({ user: finalUser.toAuthJSON() }))
-        .catch(err => console.log('err', err));
-    }
-  });
-});
+router.post('/', createUser);
 
 // GET current route (required, only authenticated users have access)
-router.get('/', auth.required, (req, res, next) => {
-  const {
-    // @ts-ignore
-    payload: { id },
-  } = req;
-
-  return User.findById(id).then(user => {
-    if (!user) {
-      return res.sendStatus(400);
-    }
-
-    return res.json(user.getUser());
-  });
-});
+router.get('/', auth.required, getUser);
 
 // POST login route (optional, everyone has access)
-router.post('/login', auth.optional, (req, res, next) => {
-  const {
-    body: { user },
-  } = req;
+router.post('/login', auth.optional, login)
 
-  if (!user.email) {
-    return res.status(422).json({
-      errors: { email: 'is required' },
-    });
-  }
-
-  if (!user.password) {
-    return res.status(422).json({
-      errors: { password: 'is required' },
-    });
-  }
-
-  return passport.authenticate(
-    'local',
-    { session: false },
-    (err, passportUser, info) => {
-      if (err) {
-        return next(err);
-      }
-
-      if (passportUser) {
-        const user = passportUser;
-
-        user.token = passportUser.generateJWT();
-
-        res.cookie('token', user.toAuthJSON().token)
-        return res.json({ user: user });
-      }
-
-      return res.status(400).json({
-        errors: { user: info }
-      });
-    }
-  )(req, res, next);
-});
-
-router.get('/verify/:id/:key', auth.optional, usersControllers.verifyUser);
+router.get('/verify/:id/:key', auth.optional, verifyUser);
 
 export default router;
