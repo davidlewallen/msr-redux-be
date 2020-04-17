@@ -24,7 +24,7 @@ export const createRecipe = (req: Request, res: Response) => {
   const recipe = new Recipe({ title, ingredients, directions })
 
   recipe.save()
-    .then(() => res.status(200))
+    .then(() => res.sendStatus(200))
     .catch(err => {
       console.log('recipe -> createRecipe error:', err);
 
