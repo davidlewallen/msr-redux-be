@@ -14,6 +14,7 @@ const UserSchema: Schema = new Schema({
     status: Boolean,
     key: String,
   },
+  recipes: { type: [Schema.Types.ObjectId], default: [] }
 });
 
 UserSchema.methods.setPassword = function (password: string) {
