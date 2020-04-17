@@ -6,7 +6,7 @@ export interface IUser {
   salt?: string,
   verification: {
     status: boolean,
-    key: string,
+    key: string, dfasd
   }
   recipes: [Types.ObjectId]
 }
