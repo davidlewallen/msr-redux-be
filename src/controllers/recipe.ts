@@ -50,3 +50,27 @@ export const createRecipe = (req: Request, res: Response) => {
       return res.status(500).json({ errors: err })
     })
 }
+
+export const deleteRecipe = (req: Request, res: Response) => {
+  const { params, cookies } = req
+  const { recipeId } = params;
+  const { token } = cookies;
+
+  const decodeToken = decode(token)
+  // @ts-ignore
+  const { id: userID }: { userID: Types.ObjectId } = decodeToken
+
+
+  User.findById(userID)
+    .then(user => {
+      if (!user) return;
+
+      const filteredRecipes = user.recipes.filter(recipe => recipe.toHexString() !== recipeId)
+
+      user.recipes = filteredRecipes;
+
+      return user.save()
+    })
+    .then(() => res.sendStatus(200))
+    .catch(err => res.send(500).json({ errors: err }))
+}
