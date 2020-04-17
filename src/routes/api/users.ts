@@ -5,14 +5,14 @@ import validator from 'validator'
 
 import auth from '../auth'
 import usersControllers from '../../controllers/users'
-import { IUserModel } from '../../models/interface';
+import { IUserModel } from '../../models/interface/user';
 
-const Users: Model<IUserModel> = model('Users');
+const User: Model<IUserModel> = model('User');
 
 const router = express.Router();
 
 // POST new user route (optional, everyone has access)
-router.post('/', auth.optional, (req, res, next) => {
+router.post('/', (req, res, next) => {
   const {
     body: { user },
   } = req;
@@ -35,13 +35,13 @@ router.post('/', auth.optional, (req, res, next) => {
     });
   }
 
-  Users.findOne({ email: user.email }).then(existingUser => {
+  User.findOne({ email: user.email }).then(existingUser => {
     const alreadyRegistered = !!existingUser;
 
     if (alreadyRegistered) {
       return res.status(409).json({ errors: { email: 'already exist' } });
     } else {
-      const finalUser = new Users(user);
+      const finalUser = new User(user);
 
       finalUser.setPassword(user.password);
 
@@ -61,12 +61,12 @@ router.get('/', auth.required, (req, res, next) => {
     payload: { id },
   } = req;
 
-  return Users.findById(id).then(user => {
+  return User.findById(id).then(user => {
     if (!user) {
       return res.sendStatus(400);
     }
 
-    return res.json({ user: user.toAuthJSON() });
+    return res.json(user.getUser());
   });
 });
 
@@ -101,7 +101,8 @@ router.post('/login', auth.optional, (req, res, next) => {
 
         user.token = passportUser.generateJWT();
 
-        return res.json({ user: user.toAuthJSON() });
+        res.cookie('token', user.toAuthJSON().token)
+        return res.json({ user: user });
       }
 
       return res.status(400).json({

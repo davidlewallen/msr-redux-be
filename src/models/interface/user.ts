@@ -1,4 +1,4 @@
-import { Document, Types } from 'mongoose'
+import { Document } from 'mongoose'
 
 export interface IUser {
   email?: string,
@@ -18,5 +18,10 @@ export interface IUserModel extends IUser, Document {
     _id: string,
     email: string,
     token: string
+  },
+  getUser(): {
+    id: string,
+    email: string,
+    isVerified: boolean
   }
 }

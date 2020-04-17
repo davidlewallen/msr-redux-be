@@ -1,12 +1,12 @@
-import { Schema, Model, Document, model } from 'mongoose';
+import { Schema, Model, model } from 'mongoose';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 
-import { IUserModel } from './interface'
+import { IUserModel } from './interface/user'
 
 const { JWT_SECRET_REQUIRED = '' } = process.env
 
-const UsersSchema: Schema = new Schema({
+const UserSchema: Schema = new Schema({
   email: String,
   hash: String,
   salt: String,
@@ -16,14 +16,14 @@ const UsersSchema: Schema = new Schema({
   },
 });
 
-UsersSchema.methods.setPassword = function (password: string) {
+UserSchema.methods.setPassword = function (password: string) {
   this.salt = crypto.randomBytes(16).toString('hex');
   this.hash = crypto
     .pbkdf2Sync(password, this.salt, 10000, 512, 'sha512')
     .toString('hex');
 };
 
-UsersSchema.methods.validatePassword = function (password: string) {
+UserSchema.methods.validatePassword = function (password: string) {
   const hash = crypto
     .pbkdf2Sync(password, this.salt, 10000, 512, 'sha512')
     .toString('hex');
@@ -31,7 +31,7 @@ UsersSchema.methods.validatePassword = function (password: string) {
   return this.hash === hash;
 };
 
-UsersSchema.methods.generateJWT = function () {
+UserSchema.methods.generateJWT = function () {
   const today = new Date();
   const expirationDate = new Date(today);
 
@@ -47,7 +47,7 @@ UsersSchema.methods.generateJWT = function () {
   );
 };
 
-UsersSchema.methods.toAuthJSON = function () {
+UserSchema.methods.toAuthJSON = function () {
   return {
     _id: this._id,
     email: this.email,
@@ -55,4 +55,12 @@ UsersSchema.methods.toAuthJSON = function () {
   };
 };
 
-export const User: Model<IUserModel> = model<IUserModel>('Users', UsersSchema);
+UserSchema.methods.getUser = function () {
+  return {
+    id: this._id,
+    email: this.email,
+    isVerified: this.verification.status
+  }
+}
+
+export const User: Model<IUserModel> = model<IUserModel>('User', UserSchema);

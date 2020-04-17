@@ -3,9 +3,9 @@ import mailgun from 'mailgun-js';
 import { Model, model, Types } from 'mongoose';
 import { v1 as uuidv1 } from 'uuid';
 
-import { IUserModel } from '../models/interface';
+import { IUserModel } from '../models/interface/user';
 
-const Users: Model<IUserModel> = model('Users');
+const User: Model<IUserModel> = model('User');
 
 const isProduction = process.env.NODE_ENV === 'production';
 const isDevelopment = !isProduction;
@@ -18,7 +18,7 @@ const mg = mailgun({
 const setUserToUnverified = (id: string) => {
   const verificationKey = uuidv1();
 
-  return Users.findByIdAndUpdate(id, {
+  return User.findByIdAndUpdate(id, {
     verification: {
       status: false,
       key: verificationKey,
@@ -27,7 +27,7 @@ const setUserToUnverified = (id: string) => {
 };
 
 const setUserToBeVerified = (id: string) => {
-  return Users.findByIdAndUpdate(id, {
+  return User.findByIdAndUpdate(id, {
     verification: { status: true },
   });
 };
@@ -47,7 +47,7 @@ const verifyUser = (req: Request, res: Response) => {
       errors: { key: 'is required' },
     });
 
-  return Users.findById(id).then(user => {
+  return User.findById(id).then(user => {
     if (user === null) {
       return res.status(400).json({ errors: { user: 'does not exist' } });
     }

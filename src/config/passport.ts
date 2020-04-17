@@ -2,11 +2,11 @@ import { Model, model } from 'mongoose';
 import passport from 'passport'
 import * as passportLocal from 'passport-local'
 
-import { IUserModel } from '../models/interface'
+import { IUserModel } from '../models/interface/user'
 
 const LocalStrategy = passportLocal.Strategy
 
-const Users: Model<IUserModel> = model('Users');
+const User: Model<IUserModel> = model('User');
 
 passport.use(
   new LocalStrategy(
@@ -15,7 +15,7 @@ passport.use(
       passwordField: 'user[password]',
     },
     (email: string, password: string, done) => {
-      Users.findOne({ email })
+      User.findOne({ email })
         .then(user => {
           if (!user || !user.validatePassword(password)) {
             return done('email or password is invalid', false)
