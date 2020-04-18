@@ -10,12 +10,12 @@ const getTokenFromCookies = (req: Request): string => {
 const auth = {
   required: jwt({
     secret: process.env.JWT_SECRET_REQUIRED || '',
-    userProperty: 'payload',
+    userProperty: 'meta',
     getToken: getTokenFromCookies,
   }),
   optional: jwt({
     secret: process.env.JWT_SECRET_OPTIONAL || '',
-    userProperty: 'payload',
+    userProperty: 'meta',
     getToken: getTokenFromCookies,
     credentialsRequired: false,
   }),

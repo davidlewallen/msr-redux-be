@@ -141,9 +141,9 @@ export const createUser = (req: Request, res: Response) => {
 }
 
 export const getUser = (req: Request, res: Response) => {
-  //@ts-ignore
-  const { payload } = req;
-  const { id } = payload;
+  // @ts-ignore
+  const { meta } = req;
+  const { id } = meta;
 
   return User.findById(id).then(user => {
     if (!user) {

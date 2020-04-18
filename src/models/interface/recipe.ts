@@ -1,7 +1,7 @@
 import { Document } from 'mongoose';
 
 export interface IRecipe {
-  created: Date,
+  createdAt: Date,
   title: String,
   time?: { hours?: Number, minutes?: Number },
   ingredients: String[],
