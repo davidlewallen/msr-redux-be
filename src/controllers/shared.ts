@@ -19,4 +19,4 @@ export const findRecipesByUser = (userID: Types.ObjectId) => User.findById(userI
   .then(usersRecipeList => Recipe.find({ '_id': { $in: usersRecipeList } }))
   .then(recipeList => cleanRecipes(recipeList))
 
-export const findRecipesByList = (recipeIDList: Types.ObjectId[]) => Recipe.find({ '_id': { $in: recipeIDList } }).then(recipeList => cleanRecipes(recipeList)
+export const findRecipesByList = (recipeIDList: Types.ObjectId[]) => Recipe.find({ '_id': { $in: recipeIDList } }).then(recipeList => cleanRecipes(recipeList))
