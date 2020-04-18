@@ -60,7 +60,8 @@ UserSchema.methods.getUser = function () {
   return {
     id: this._id,
     email: this.email,
-    isVerified: this.verification.status
+    isVerified: this.verification.status,
+    recipes: this.recipes
   }
 }
 

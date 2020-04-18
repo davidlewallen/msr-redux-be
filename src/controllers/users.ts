@@ -5,6 +5,7 @@ import { v1 as uuidv1 } from 'uuid';
 import validator from 'validator';
 import passport from 'passport'
 
+import { findRecipesByList } from './shared';
 import { IUserModel } from '../models/interface/user';
 
 const User: Model<IUserModel> = model('User');
@@ -150,7 +151,15 @@ export const getUser = (req: Request, res: Response) => {
       return res.sendStatus(400);
     }
 
-    return res.json(user.getUser());
+    return findRecipesByList(user.recipes)
+      .then(recipes => {
+        const userCopy = user.getUser();
+
+        userCopy.recipes = recipes;
+
+        return res.status(200).json(userCopy);
+      })
+      .catch(err => res.status(500).json({ errors: err }))
   });
 }
 

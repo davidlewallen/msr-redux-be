@@ -1,4 +1,4 @@
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 export interface IRecipe {
   createdAt: Date,
@@ -9,3 +9,7 @@ export interface IRecipe {
 }
 
 export interface IRecipeModel extends IRecipe, Document { };
+
+export interface ICleanedRecipe extends IRecipe {
+  id: Types.ObjectId,
+}

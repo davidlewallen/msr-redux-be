@@ -11,11 +11,12 @@ const cleanRecipes = (recipeList: IRecipeModel[]) => recipeList.map(recipe => ({
   title: recipe.title,
   ingredients: recipe.ingredients,
   directions: recipe.directions,
-  // Uncomment if we need on FE
-  // createdAt: recipe.createdAt
+  createdAt: recipe.createdAt
 }))
 
 export const findRecipesByUser = (userID: Types.ObjectId) => User.findById(userID)
   .then(user => user?.recipes ?? [])
   .then(usersRecipeList => Recipe.find({ '_id': { $in: usersRecipeList } }))
   .then(recipeList => cleanRecipes(recipeList))
+
+export const findRecipesByList = (recipeIDList: Types.ObjectId[]) => Recipe.find({ '_id': { $in: recipeIDList } }).then(recipeList => cleanRecipes(recipeList)
