@@ -1,13 +1,7 @@
-import { Model, model } from 'mongoose';
-import passport from 'passport'
 import express from 'express'
-import validator from 'validator'
 
 import auth from '../auth'
 import { createUser, getUser, login, verifyUser } from '../../controllers/users'
-import { IUserModel } from '../../models/interface/user';
-
-const User: Model<IUserModel> = model('User');
 
 const router = express.Router();
 

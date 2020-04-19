@@ -50,7 +50,7 @@ UserSchema.methods.generateJWT = function () {
 
 UserSchema.methods.toAuthJSON = function () {
   return {
-    _id: this._id,
+    id: this._id,
     email: this.email,
     token: this.generateJWT(),
   };
@@ -60,7 +60,8 @@ UserSchema.methods.getUser = function () {
   return {
     id: this._id,
     email: this.email,
-    isVerified: this.verification.status
+    isVerified: this.verification.status,
+    recipes: this.recipes
   }
 }
 

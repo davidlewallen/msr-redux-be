@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { Model, model, Types } from 'mongoose';
-import { decode } from 'jsonwebtoken'
 
+import { findRecipesByUser } from './shared';
 import { IRecipeModel } from '../models/interface/recipe';
 import { IUserModel } from '../models/interface/user'
 
@@ -25,15 +25,11 @@ const addRecipeIdToUser = (userID: Types.ObjectId, recipeId: Types.ObjectId) => 
 }
 
 export const createRecipe = (req: Request, res: Response) => {
-  const { body, cookies } = req;
-  const { token } = cookies;
+  const { body } = req;
   const { title, ingredients, directions }: { title: string, ingredients: string[], directions: string[] } = body;
-
-  const decodedToken = decode(token);
   // @ts-ignore
-  const { id: userID }: { userID: Types.ObjectId } = decodedToken
-
-
+  const { meta } = req;
+  const { id: userID }: { id: Types.ObjectId } = meta;
 
   if (!title) return res.status(400).json({ errors: { title: 'is required' } })
   if (!ingredients) return res.status(400).json({ errors: { ingredients: 'is required' } })
@@ -52,13 +48,11 @@ export const createRecipe = (req: Request, res: Response) => {
 }
 
 export const deleteRecipe = (req: Request, res: Response) => {
-  const { params, cookies } = req
+  const { params } = req
   const { recipeId } = params;
-  const { token } = cookies;
-
-  const decodeToken = decode(token)
   // @ts-ignore
-  const { id: userID }: { userID: Types.ObjectId } = decodeToken
+  const { meta } = req
+  const { id: userID }: { id: Types.ObjectId } = meta;
 
 
   User.findById(userID)
@@ -82,3 +76,16 @@ export const deleteRecipe = (req: Request, res: Response) => {
     })
 }
 
+export const getRecipes = (req: Request, res: Response) => {
+  // @ts-ignore
+  const { meta } = req;
+  const { id: userID }: { id: Types.ObjectId } = meta;
+
+  return findRecipesByUser(userID)
+    .then(recipes => res.status(200).json(recipes))
+    .catch(err => {
+      console.log('Error:', err);
+
+      return res.status(500).json({ errors: err })
+    })
+}
