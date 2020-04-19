@@ -61,12 +61,19 @@ export const deleteRecipe = (req: Request, res: Response) => {
 
       const filteredRecipes = user.recipes.filter(recipe => recipe.toHexString() !== recipeId)
 
+      if (user.recipes.length === filteredRecipes.length) throw new Error('Recipe does not exist')
+
       user.recipes = filteredRecipes;
 
       return user.save()
     })
     .then(() => res.sendStatus(200))
-    .catch(err => res.send(500).json({ errors: err }))
+    .catch(err => {
+      if (err instanceof Error) {
+        return res.status(400).json({ errors: [{ [err.name]: err.message }] })
+      }
+      return res.status(500).json({ errors: err })
+    })
 }
 
 export const getRecipes = (req: Request, res: Response) => {
