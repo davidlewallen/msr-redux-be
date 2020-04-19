@@ -1,5 +1,7 @@
 import { Document, Types } from 'mongoose'
 
+import { ICleanedRecipe } from './recipe'
+
 export interface IUser {
   email?: string,
   hash?: string,
@@ -24,5 +26,6 @@ export interface IUserModel extends IUser, Document {
     id: string,
     email: string,
     isVerified: boolean
+    recipes: ICleanedRecipe[],
   }
 }
