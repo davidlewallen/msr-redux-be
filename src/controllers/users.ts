@@ -72,7 +72,7 @@ const sendVerificationEmail = (user: IUserModel) => {
   return setUserToUnverified(user._id).then(verificationKey => {
     const verificationParams = `id=${user._id}&key=${verificationKey}`;
 
-    const verificationLink = 'TODO: Update me for FE ' + verificationParams;
+    const verificationLink = `http://localhost:3000/verify-email?${verificationParams}`;
 
     const emailTemplate = {
       from: 'My Saved Recipes <support@mail.mysavedrecipes.com>',
@@ -81,7 +81,7 @@ const sendVerificationEmail = (user: IUserModel) => {
       text: `
       Thank you for signing up with My Saved Recipes!
       Please follow the link below to verify your account.
-      ${verificationLink} /${user._id}/${verificationKey}
+      ${verificationLink}
     `,
     };
 
