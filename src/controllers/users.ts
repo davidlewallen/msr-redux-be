@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import mailgun from 'mailgun-js';
-import { Model, model } from 'mongoose';
+import { Model, model, Types } from 'mongoose';
 import { v1 as uuidv1 } from 'uuid';
 import validator from 'validator';
 import passport from 'passport'
@@ -50,6 +50,10 @@ export const verifyUser = (req: Request, res: Response) => {
       errors: { key: 'is required' },
     });
 
+  if (!Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ errors: { user: 'does not exist' } })
+  }
+
   return User.findById(id).then(user => {
     if (user === null) {
       return res.status(400).json({ errors: { user: 'does not exist' } });
@@ -65,14 +69,17 @@ export const verifyUser = (req: Request, res: Response) => {
         .json({ errors: { key: 'does not match saved verification key' } });
     }
     return setUserToBeVerified(id).then(() => res.sendStatus(200));
-  });
+  })
+    .catch(err => {
+      console.log('verifyUser:', err)
+    })
 };
 
 const sendVerificationEmail = (user: IUserModel) => {
   return setUserToUnverified(user._id).then(verificationKey => {
     const verificationParams = `id=${user._id}&key=${verificationKey}`;
 
-    const verificationLink = 'TODO: Update me for FE ' + verificationParams;
+    const verificationLink = `http://localhost:3000/verify-email?${verificationParams}`;
 
     const emailTemplate = {
       from: 'My Saved Recipes <support@mail.mysavedrecipes.com>',
@@ -81,7 +88,7 @@ const sendVerificationEmail = (user: IUserModel) => {
       text: `
       Thank you for signing up with My Saved Recipes!
       Please follow the link below to verify your account.
-      ${verificationLink} /${user._id}/${verificationKey}
+      ${verificationLink}
     `,
     };
 
