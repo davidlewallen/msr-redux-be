@@ -4,7 +4,6 @@ import express from 'express';
 import path from 'path';
 import bodyParser from 'body-parser'
 import cors from 'cors'
-import mongoose from 'mongoose'
 import errorHandler from 'errorhandler'
 import morgan from 'morgan'
 import cookieParser from 'cookie-parser'
@@ -13,6 +12,9 @@ import './models'
 import './config/passport'
 
 import routes from './routes'
+import { initializeDatabase } from './config/db';
+
+initializeDatabase();
 
 // Configure mongoose's promise to global promise
 // mongoose.promise = global.Promise;
@@ -36,21 +38,6 @@ if (isDevelopment) {
   app.use(require('morgan')('dev'));
   app.use(errorHandler());
   app.use(morgan('dev'));
-}
-
-// Configure Mongoose
-mongoose.connect(
-  process.env[`MONGOOSE_DB_URL_${isProduction ? 'PROD' : 'DEV'}`] || '',
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  }
-);
-
-mongoose.set('useFindAndModify', true);
-
-if (isDevelopment) {
-  mongoose.set('debug', true);
 }
 
 // Models & routes
